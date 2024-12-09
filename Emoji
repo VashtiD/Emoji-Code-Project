@@ -1,0 +1,85 @@
+import simplegui
+
+# User input for frame dimensions
+frame_width = int(input("What do you want the width to be: "))
+frame_height = int(input("What do you want the height to be: "))
+
+# Initialize global variables
+emotions = ["happy", "sad", "scared", "angry"]
+show_emotions = [False] * len(emotions)
+
+# Function to draw the circles and faces
+def draw(canvas):
+    quadrant_width = frame_width / 2
+    quadrant_height = frame_height / 2
+    radius = 50  # Radius of the circles
+
+    # Draw circles in each quadrant
+    positions = [
+        (quadrant_width + radius, radius),  # Top right
+        (radius, radius),                    # Top left
+        (radius, quadrant_height + radius),  # Bottom left
+        (quadrant_width + radius, quadrant_height + radius),  # Bottom right
+    ]
+    
+    for i in range(4):
+        x, y = positions[i]
+        canvas.draw_circle((x, y), radius, 2, "Black", "White")
+        
+        # Draw emotion faces
+        if show_emotions[i]:
+            draw_emotion_face(canvas, emotions[i], x, y, radius)
+
+    # Draw Labels
+    for i, emotion in enumerate(emotions):
+        canvas.draw_text(emotion, (positions[i % 2][0] - 10, positions[i % 2][1] + radius + 20), 20, "Black")
+
+# Function to draw emotion faces
+def draw_emotion_face(canvas, emotion, x, y, radius):
+    if emotion == "happy":
+        canvas.draw_circle((x, y), radius // 2, 2, "Black", "Yellow")
+        canvas.draw_circle((x - 15, y - 10), 5, 2, "Black", "Black")  # Left eye
+        canvas.draw_circle((x + 15, y - 10), 5, 2, "Black", "Black")  # Right eye
+        canvas.draw_line((x - 20, y + 10), (x + 20, y + 10), 2, "Black")  # Smile
+
+    elif emotion == "sad":
+        canvas.draw_circle((x, y), radius // 2, 2, "Black", "LightBlue")
+        canvas.draw_circle((x - 15, y - 10), 5, 2, "Black", "Black")  # Left eye
+        canvas.draw_circle((x + 15, y - 10), 5, 2, "Black", "Black")  # Right eye
+        canvas.draw_line((x - 20, y + 30), (x + 20, y + 20), 2, "Black")  # Sad mouth
+
+    elif emotion == "scared":
+        canvas.draw_circle((x, y), radius // 2, 2, "Black", "LightPink")
+        canvas.draw_circle((x - 15, y - 10), 5, 2, "Black", "Black")  # Left eye
+        canvas.draw_circle((x + 15, y - 10), 5, 2, "Black", "Black")  # Right eye
+        canvas.draw_line((x - 15, y + 10), (x + 15, y + 10), 2, "Black")  # Straight line for mouth
+
+    elif emotion == "angry":
+        canvas.draw_circle((x, y), radius // 2, 2, "Black", "Red")
+        canvas.draw_circle((x - 15, y - 10), 5, 2, "Black", "Black")  # Left eye
+        canvas.draw_circle((x + 15, y - 10), 5, 2, "Black", "Black")  # Right eye
+        canvas.draw_line((x - 20, y + 10), (x + 20, y + 10), 2, "Black")  # Angry mouth
+
+
+# Button handlers to show emotions
+def toggle_emotion(index):
+    global show_emotions
+    show_emotions[index] = not show_emotions[index]
+
+def show_all_emotions():
+    global show_emotions
+    show_emotions = [True] * len(show_emotions)  # Set all to True
+
+# Create frame and register draw handler
+frame = simplegui.create_frame("Emotion Visualizer", frame_width, frame_height)
+frame.set_draw_handler(draw)
+
+# Add buttons for each emotion
+for i, emotion in enumerate(emotions):
+    frame.add_button("Toggle " + emotion, lambda i=i: toggle_emotion(i))
+
+# Add button to show all emotions
+frame.add_button("Show All Emotions", show_all_emotions)
+
+# Start frame
+frame.start()
